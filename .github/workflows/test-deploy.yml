@@ -13,7 +13,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    environment: ${{ github.head_ref == 'refs/heads/develop' && 'dev' || 'staging' }}
+    environment: dev
     steps:
     - uses: actions/checkout@v4
     
@@ -30,9 +30,9 @@ jobs:
     - name: Run tests
       env:
         DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
-        GH_REF: ${{ github.head_ref }}
+        DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
+        DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
       run: |
-        echo "gh ref : $GH_REF"
-        echo "db host : $DATABRICKS_HOST"
+        python run_tests_on_remote.py
 
 
