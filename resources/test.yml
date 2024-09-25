@@ -1,0 +1,12 @@
+resources:
+  jobs:
+    job_with_requirements_txt:
+      name: Example job that uses a requirements.txt file
+
+      tasks:
+        - task_key: task
+          job_cluster_key: default
+          spark_python_task:
+            python_file: ../src/main.py
+          libraries:
+            - requirements: /Workspace/${workspace.file_path}/requirements.txt
