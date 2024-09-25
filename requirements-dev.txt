@@ -28,3 +28,5 @@ wheel
 ## for this project.
 #
 # databricks-connect>=13.3,<13.4
+
+databricks-sdk
