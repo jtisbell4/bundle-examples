@@ -12,9 +12,12 @@ def get_taxis(spark: SparkSession) -> DataFrame:
 # On CI runner, DATABRICKS_HOST, DATABRICKS_CLIENT_ID, DATABRICKS_CLIENT_SECRET, and
 # DATABRICKS_CLUSTER_ID must be set.
 def get_spark() -> SparkSession:
-    from databricks.connect import DatabricksSession
+    try:
+        from databricks.connect import DatabricksSession
 
-    return DatabricksSession.builder.getOrCreate()
+        return DatabricksSession.builder.getOrCreate()
+    except ImportError:
+        return SparkSession.builder.getOrCreate()
 
 
 def main():
