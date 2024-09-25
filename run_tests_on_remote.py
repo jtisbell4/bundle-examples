@@ -9,7 +9,7 @@ def get_cluster_id():
 
     w = WorkspaceClient()
     clusters = list(w.clusters.list())
-    
+
     testing_cluster_name = "Testing Cluster"
     matched_cluster = [x for x in clusters if x.cluster_name == testing_cluster_name]
 
@@ -34,6 +34,7 @@ def get_cluster_id():
     else:
         cluster_id = matched_cluster[0].cluster_id
         w.clusters.ensure_cluster_is_running(cluster_id=cluster_id)
+    return cluster_id
 
 
 if __name__ == "__main__":
