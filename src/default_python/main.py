@@ -1,7 +1,8 @@
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import DataFrame, SparkSession
+
 
 def get_taxis(spark: SparkSession) -> DataFrame:
-  return spark.read.table("samples.nyctaxi.trips")
+    return spark.read.table("samples.nyctaxi.trips")
 
 
 # Create a new Databricks Connect session. If this fails,
@@ -11,14 +12,14 @@ def get_taxis(spark: SparkSession) -> DataFrame:
 # On CI runner, DATABRICKS_HOST, DATABRICKS_CLIENT_ID, DATABRICKS_CLIENT_SECRET, and
 # DATABRICKS_CLUSTER_ID must be set.
 def get_spark() -> SparkSession:
-  try:
     from databricks.connect import DatabricksSession
+
     return DatabricksSession.builder.getOrCreate()
-  except ImportError:
-    return SparkSession.builder.getOrCreate()
+
 
 def main():
-  get_taxis(get_spark()).show(5)
+    get_taxis(get_spark()).show(5)
 
-if __name__ == '__main__':
-  main()
+
+if __name__ == "__main__":
+    main()
