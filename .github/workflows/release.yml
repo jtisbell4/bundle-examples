@@ -39,7 +39,7 @@ jobs:
         run: |
           latest_tag=${{ steps.latest_tag.outputs.latest_tag }}
           date_part=${{ steps.date.outputs.date }}
-          if [[ $latest_tag == v$date_part.* ]]; then
+          if [[ $latest_tag == *v$date_part.* ]]; then
             minor_version=$(echo $latest_tag | awk -F. '{print $NF+1}')
           else
             minor_version=0
