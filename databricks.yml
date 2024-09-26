@@ -20,17 +20,10 @@ targets:
   # (See Databricks docs on CI/CD at https://docs.databricks.com/dev-tools/bundles/ci-cd.html.)
   staging:
     mode: production
-    workspace:
-
-      root_path: /Users/user@company.com/.bundle/${bundle.name}/${bundle.target}
 
   # The 'prod' target, used for production deployment.
   prod:
     # We use 'mode: production' to indicate this is a production deployment.
     # Doing so enables strict verification of the settings below.
     mode: production
-    workspace:
 
-      # We always use /Users/user@company.com for all resources to make sure we only have a single copy.
-      # If this path results in an error, please make sure you have a recent version of the CLI installed.
-      root_path: /Users/user@company.com/.bundle/${bundle.name}/${bundle.target}
