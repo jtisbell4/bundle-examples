@@ -1,0 +1,78 @@
+name: Deploy
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  push:
+    branches: ["release"]
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+    if: ${{ github.base_ref == 'release' }}
+    environment: prod
+    steps:
+    - name: Placeholder for tests
+      run: |
+        echo "This is where some specific integration tests or additional unit tests \
+        would be performed. These must pass before proceeding to tagging and releasing"
+
+  create-tag:
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y.%m.%d')" >> $GITHUB_OUTPUT
+      
+      - name: Get latest tag
+        id: latest_tag
+        run: |
+          latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0.0")
+          echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+      
+      - name: Generate new tag
+        id: new_tag
+        run: |
+          latest_tag=${{ steps.latest_tag.outputs.latest_tag }}
+          date_part=${{ steps.date.outputs.date }}
+          if [[ $latest_tag == v$date_part.* ]]; then
+            minor_version=$(echo $latest_tag | awk -F. '{print $NF+1}')
+          else
+            minor_version=0
+          fi
+          new_tag="v$date_part.$minor_version"
+          echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
+      
+      - name: Create tag
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git tag ${{ steps.new_tag.outputs.new_tag }}
+          git push origin ${{ steps.new_tag.outputs.new_tag }}
+
+  deploy-to-prod:
+    needs: create-tag
+    runs-on: ubuntu-latest
+    environment: prod
+    env:
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
+      DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+      ENV_NAME: prod
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Databricks CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+          databricks -v
+
+      - name: Validate and deploy
+        run: |
+          databricks bundle validate -t $ENV_NAME
+          databricks bundle deploy -t $ENV_NAME

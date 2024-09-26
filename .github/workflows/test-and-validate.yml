@@ -8,9 +8,9 @@ on:
     branches: ['main', 'release']
 
 jobs:
-  test:
+  unit-tests:
     runs-on: ubuntu-latest
-    environment: ${{ github.base_ref == 'release' && 'prod' || 'staging' }}
+    environment: staging
     steps:
     - uses: actions/checkout@v4
     
@@ -33,13 +33,14 @@ jobs:
         python run_tests_on_remote.py
 
   validate:
-    needs: test
+    needs: unit-tests
     runs-on: ubuntu-latest
-    environment: ${{ github.base_ref == 'release' && 'prod' || 'staging' }}
+    environment: staging
     env:
       DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
       DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
-      DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}      
+      DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+      ENV_NAME: staging   
     steps:
     - uses: actions/checkout@v4
 
@@ -50,8 +51,7 @@ jobs:
     
     - name: Validate and deploy
       run: |
-        databricks bundle validate -t dev
-
+        databricks bundle validate -t $ENV_NAME
 
 
 
