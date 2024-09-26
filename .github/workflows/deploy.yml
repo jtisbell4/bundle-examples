@@ -5,16 +5,18 @@ name: Deploy
 # or API.
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "release"]
 
 jobs:
-  deploy:
+
+  deploy-to-staging:
     runs-on: ubuntu-latest
     environment: staging
     env:
       DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
       DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
       DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+      ENV_NAME: staging
     steps:
       - uses: actions/checkout@v4
 
@@ -25,5 +27,6 @@ jobs:
 
       - name: Validate and deploy
         run: |
-          databricks bundle validate -t dev
-          databricks bundle deploy -t dev
+          databricks bundle validate -t $ENV_NAME
+          databricks bundle deploy -t $ENV_NAME
+
