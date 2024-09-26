@@ -45,6 +45,7 @@ jobs:
             minor_version=0
           fi
           new_tag="v$date_part.$minor_version"
+          echo $new_tag
           echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
       
       - name: Create tag
