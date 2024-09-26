@@ -9,7 +9,6 @@ on:
 jobs:
   integration-tests:
     runs-on: ubuntu-latest
-    if: ${{ github.base_ref == 'release' }}
     environment: prod
     steps:
     - name: Placeholder for tests
@@ -54,6 +53,19 @@ jobs:
           git config user.email github-actions@github.com
           git tag ${{ steps.new_tag.outputs.new_tag }}
           git push origin ${{ steps.new_tag.outputs.new_tag }}
+      
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.new_tag.outputs.new_tag }}
+          release_name: Release v${{ steps.new_tag.outputs.new_tag }}
+          body: |
+            Release notes for version ${{ steps.new_tag.outputs.new_tag }}
+            // Add your release notes here
+          draft: false
+          prerelease: false
 
   deploy-to-prod:
     needs: create-tag
