@@ -1,19 +1,16 @@
-# This is a basic workflow that is manually triggered
-
-name: Test and Deploy
+name: Test and Validate
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
 on:
   pull_request:
     types: [opened, synchronize]
-  push:
-    branches: ['main']
+    branches: ['main', 'release']
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    environment: dev
+    environment: ${{ github.base_ref == 'release' && 'prod' || 'staging' }}
     steps:
     - uses: actions/checkout@v4
     
@@ -35,10 +32,10 @@ jobs:
       run: |
         python run_tests_on_remote.py
 
-  deploy:
+  validate:
     needs: test
     runs-on: ubuntu-latest
-    environment: dev
+    environment: ${{ github.base_ref == 'release' && 'prod' || 'staging' }}
     env:
       DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
       DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
@@ -54,7 +51,6 @@ jobs:
     - name: Validate and deploy
       run: |
         databricks bundle validate -t dev
-        databricks bundle deploy -t dev
 
 
 
