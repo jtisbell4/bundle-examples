@@ -23,10 +23,6 @@ targets:
     workspace:
 
       root_path: /Users/user@company.com/.bundle/${bundle.name}/${bundle.target}
-    run_as:
-      # This runs as user@company.com in production. We could also use a service principal here,
-      # see https://docs.databricks.com/dev-tools/bundles/permissions.html.
-      user_name: user@company.com
 
   # The 'prod' target, used for production deployment.
   prod:
@@ -38,7 +34,3 @@ targets:
       # We always use /Users/user@company.com for all resources to make sure we only have a single copy.
       # If this path results in an error, please make sure you have a recent version of the CLI installed.
       root_path: /Users/user@company.com/.bundle/${bundle.name}/${bundle.target}
-    run_as:
-      # This runs as user@company.com in production. We could also use a service principal here,
-      # see https://docs.databricks.com/dev-tools/bundles/permissions.html.
-      user_name: user@company.com
